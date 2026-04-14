@@ -33,8 +33,8 @@ The simulator allows users to visualize process execution and compare performanc
 
 ## 🖥️ Technologies Used
 
-* Language: (Python / Java — عدل دي)
-* GUI Framework: (Tkinter / PyQt / JavaFX)
+* Language: (C++)
+* GUI Framework: 
 * Other Tools: Git & GitHub
 
 ---
@@ -56,7 +56,7 @@ python main.py
 
 ## 🔗 Executable File
 
-[Download EXE](PUT_YOUR_DRIVE_LINK_HERE)
+
 
 ---
 
@@ -74,8 +74,8 @@ python main.py
 
 ## 👥 Team Members
 
-* Your Name
-* Member 2
+* Ahmed Ayman 
+* Yassin Ayman
 * Member 3
 * Member 4
 
