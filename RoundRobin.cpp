@@ -7,8 +7,14 @@
 #include <chrono>
 #include <climits>
 #include <algorithm>
-
+#include <iomanip> 
 using namespace std;
+
+struct GanttBlock {
+    int process_id;
+    int start_time;
+    int end_time;
+};
 
 
 // add new process to the vector
@@ -40,6 +46,7 @@ double RoundRobin::getTurnaroundTime(){
 
 
 
+
 void RoundRobin::execute() {
     cout << "\n--- Starting Round Robin Scheduling ---\n\n";
 
@@ -47,6 +54,9 @@ void RoundRobin::execute() {
     int total_processes = allProcesses.size();
     vector<int> added_to_queue;
     Process* last_process = nullptr;
+    vector<GanttBlock> gantt_chart;
+    int block_start_time = 0;
+    int current_block_pid = -1;
 
     auto addNewArrivals = [&]() {
         for (Process &p : allProcesses) {
@@ -99,6 +109,14 @@ void RoundRobin::execute() {
 
         cout << "\n[Time " << current_time << "] Process " << current_process->id << " gets the CPU.\n";
 
+        if (current_block_pid != current_process->id) {
+            if (current_block_pid != -1) {
+                gantt_chart.push_back({current_block_pid, block_start_time, current_time});
+            }
+            current_block_pid = current_process->id;
+            block_start_time = current_time;
+        }
+
         int ticks_run = 0;
         while (ticks_run < time_quantum && current_process->remaining_time > 0) {
             current_process->remaining_time--;
@@ -114,6 +132,10 @@ void RoundRobin::execute() {
             if (current_process->remaining_time <= 0) {
                 current_process->completion_time = current_time;
                 cout << "[Time " << current_time << "] Process " << current_process->id << " FINISHED!\n";
+                if (current_block_pid == current_process->id) {
+                    gantt_chart.push_back({current_block_pid, block_start_time, current_time});
+                    current_block_pid = -1;
+                }
                 completed_count++;
                 current_process = nullptr;
                 break;
@@ -127,4 +149,53 @@ void RoundRobin::execute() {
     }
 
     cout << "\n--- All Processes Completed ---\n";
+
+    // --- UPDATED ALIGNED GANTT CHART LOGIC ---
+if (gantt_chart.empty()) return;
+
+    cout << "\n========== GANTT CHART ==========\n";
+
+    // 1. Top Border
+    cout << " ";
+    for (const auto& block : gantt_chart) {
+        int id_width = (block.process_id >= 10) ? 2 : 1;
+        // " Px " takes 3 + id_width characters. 
+        cout << string(id_width + 3, '-') << " "; 
+    }
+    cout << "\n|";
+
+    // 2. Process ID Row
+    for (const auto& block : gantt_chart) {
+        cout << " P" << block.process_id << " |";
+    }
+    cout << "\n ";
+
+    // 3. Bottom Border
+    for (const auto& block : gantt_chart) {
+        int id_width = (block.process_id >= 10) ? 2 : 1;
+        cout << string(id_width + 3, '-') << " ";
+    }
+    cout << "\n";
+
+    // 4. Timeline (Timestamps)
+    // Print the starting time of the very first block
+    string last_time_str = to_string(gantt_chart[0].start_time);
+    cout << last_time_str;
+
+    for (const auto& block : gantt_chart) {
+        int id_width = (block.process_id >= 10) ? 2 : 1;
+        // The exact character width of " Px |" is id_width + 4
+        int block_width = id_width + 4; 
+        
+        // Calculate exact spaces needed to reach the next '|'
+        // by subtracting the length of the number we just printed
+        int spaces = block_width - last_time_str.length();
+        if (spaces < 1) spaces = 1; // Safety fallback
+        
+        cout << string(spaces, ' ') << block.end_time;
+        
+        // Update the last printed string so the next loop knows how much to offset
+        last_time_str = to_string(block.end_time); 
+    }
+    cout << "\n\n================================\n";
 }
