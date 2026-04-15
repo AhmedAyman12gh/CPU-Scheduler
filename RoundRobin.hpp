@@ -24,6 +24,7 @@ class RoundRobin{
     }
     void addProcess(int id , int burst_time, int arrival_time);
     void execute();
+    void liveExecute();  // Live execution with pause and add-process features
     double getWaitingTime();
     double getTurnaroundTime();
 };

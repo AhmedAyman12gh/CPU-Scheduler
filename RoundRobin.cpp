@@ -7,15 +7,18 @@
 #include <chrono>
 #include <climits>
 #include <algorithm>
-#include <iomanip> 
+#include <iomanip>  // For Gantt Chart spacing
+#include <atomic>   // For Live Execution thread safety
+#include <string>   // For to_string and string manipulation
+
 using namespace std;
 
+// Struct to store Gantt Chart data
 struct GanttBlock {
     int process_id;
     int start_time;
     int end_time;
 };
-
 
 // add new process to the vector
 void RoundRobin::addProcess(int id , int burst, int arrival) {
@@ -43,10 +46,7 @@ double RoundRobin::getTurnaroundTime(){
 }
 
 
-
-
-
-
+// --- NON-LIVE EXECUTION (Standard fast simulation) ---
 void RoundRobin::execute() {
     cout << "\n--- Starting Round Robin Scheduling ---\n\n";
 
@@ -54,6 +54,7 @@ void RoundRobin::execute() {
     int total_processes = allProcesses.size();
     vector<int> added_to_queue;
     Process* last_process = nullptr;
+    
     vector<GanttBlock> gantt_chart;
     int block_start_time = 0;
     int current_block_pid = -1;
@@ -127,8 +128,6 @@ void RoundRobin::execute() {
                  << " | Process " << current_process->id
                  << " remaining time: " << current_process->remaining_time << "\n";
 
-            this_thread::sleep_for(chrono::milliseconds(100));
-
             if (current_process->remaining_time <= 0) {
                 current_process->completion_time = current_time;
                 cout << "[Time " << current_time << "] Process " << current_process->id << " FINISHED!\n";
@@ -150,8 +149,8 @@ void RoundRobin::execute() {
 
     cout << "\n--- All Processes Completed ---\n";
 
-    // --- UPDATED ALIGNED GANTT CHART LOGIC ---
-if (gantt_chart.empty()) return;
+    // --- PERFECTLY ALIGNED GANTT CHART LOGIC ---
+    if (gantt_chart.empty()) return;
 
     cout << "\n========== GANTT CHART ==========\n";
 
@@ -159,7 +158,6 @@ if (gantt_chart.empty()) return;
     cout << " ";
     for (const auto& block : gantt_chart) {
         int id_width = (block.process_id >= 10) ? 2 : 1;
-        // " Px " takes 3 + id_width characters. 
         cout << string(id_width + 3, '-') << " "; 
     }
     cout << "\n|";
@@ -178,24 +176,21 @@ if (gantt_chart.empty()) return;
     cout << "\n";
 
     // 4. Timeline (Timestamps)
-    // Print the starting time of the very first block
     string last_time_str = to_string(gantt_chart[0].start_time);
     cout << last_time_str;
 
     for (const auto& block : gantt_chart) {
         int id_width = (block.process_id >= 10) ? 2 : 1;
-        // The exact character width of " Px |" is id_width + 4
         int block_width = id_width + 4; 
         
-        // Calculate exact spaces needed to reach the next '|'
-        // by subtracting the length of the number we just printed
         int spaces = block_width - last_time_str.length();
-        if (spaces < 1) spaces = 1; // Safety fallback
+        if (spaces < 1) spaces = 1; 
         
         cout << string(spaces, ' ') << block.end_time;
-        
-        // Update the last printed string so the next loop knows how much to offset
         last_time_str = to_string(block.end_time); 
     }
     cout << "\n\n================================\n";
 }
+
+
+
