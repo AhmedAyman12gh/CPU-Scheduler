@@ -16,7 +16,7 @@ int main(){
     processes.push_back(Process(1, 3, 0, 1)); // id, burst_time, arrival_time, priority
     processes.push_back(Process(2, 2, 0, 3));
     processes.push_back(Process(3, 5, 0, 0));
-
+ 
 
 
 
