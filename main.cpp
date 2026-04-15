@@ -1,6 +1,6 @@
 #include <iostream>
 #include "Process.hpp"
-#include "RoundRobin.hpp"
+#include "Priority.hpp"
 #include <queue>
 #include <vector>
 using namespace std;
@@ -13,22 +13,19 @@ int main(){
     // if priority wanted process(id,  burst_time, arrival_time, priority) preemptive priority scheduling
 
     vector<Process> processes;
-    processes.push_back(Process(1, 5));
-    processes.push_back(Process(2, 3));
-    processes.push_back(Process(3, 8));
-    processes.push_back(Process(4, 1));
-    processes.push_back(Process(5, 4));
-    processes.push_back(Process(6, 7));  
-    processes.push_back(Process(7, 2));
-    processes.push_back(Process(8, 9));
+    processes.push_back(Process(1, 3, 0, 1)); // id, burst_time, arrival_time, priority
+    processes.push_back(Process(2, 2, 0, 3));
+    processes.push_back(Process(3, 5, 0, 0));
 
 
-    int time_quantum = 2;
-    RoundRobin rr(time_quantum, processes);
-    rr.execute();
 
-    cout << "\nAverage Waiting Time: " << rr.getWaitingTime() << " ms\n";
-    cout << "Average Turnaround Time: " << rr.getTurnaroundTime() << " ms\n";
+
+    Priority p(processes);
+    p.execute(false); // Non-preemptive priority scheduling
+
+
+    cout << "\nAverage Waiting Time: " << p.getWaitingTime() << " ms\n";
+    cout << "Average Turnaround Time: " << p.getTurnaroundTime() << " ms\n";
 
     return 0;
 }

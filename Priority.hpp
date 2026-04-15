@@ -5,11 +5,17 @@
 #include <vector>
 #include <queue>
 using namespace std;
+
+struct Compare {
+    bool operator()(Process* a, Process* b) {
+        return a->priority > b->priority;
+    }
+};
 class Priority{
     public:
     int current_time;
     vector<Process> allProcesses;
-    queue<Process> process_queue;
+    priority_queue<Process*, vector<Process*>, Compare> process_queue;
     Process * current_process;
     bool is_live;
     bool is_preemptive;
@@ -26,11 +32,5 @@ class Priority{
     double getWaitingTime();
     double getTurnaroundTime();
 };
-
-
-
-
-
-
 
 #endif
