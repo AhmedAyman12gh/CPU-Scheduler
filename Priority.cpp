@@ -47,7 +47,10 @@ void Priority::execute( bool preemptive) {
 
     int completed_count = 0;
     int total_processes = allProcesses.size();
-    vector<int> added_to_queue;
+    vector<int> added_to_queue;  // To track which processes have been added to the queue id only
+    Process* last_process = nullptr;
+
+    // Function to add new arriving processes to the ready queue
     auto addNewArrivals = [&]() {
         for (Process &p : allProcesses) {
             if (p.arrival_time <= current_time && p.remaining_time > 0) {
@@ -65,7 +68,53 @@ void Priority::execute( bool preemptive) {
                 }
             }
         }
-    }   
+    }; 
+   
+    
+
+    while (completed_count < total_processes) {
+        if (!process_queue.empty()) {
+            // Find the process with the highest priority (lowest priority number)
+            Process highest_priority_process = process_queue.front();
+            queue<Process> temp_queue;
+            while (!process_queue.empty()) {
+                Process p = process_queue.front();
+                process_queue.pop();
+                if (p.priority < highest_priority_process.priority) {
+                    highest_priority_process = p;
+                }
+                temp_queue.push(p);
+            }
+            // Restore the processes back to the main queue
+            while (!temp_queue.empty()) {
+                process_queue.push(temp_queue.front());
+                temp_queue.pop();
+            }
+
+            // Execute the highest priority process
+            current_process = &highest_priority_process;
+            is_live = true;
+
+            int exec_time = preemptive ? 1 : current_process->remaining_time;
+            cout << "[Time " << current_time << "] Executing Process " << current_process->id << " (Priority: " << current_process->priority << ")\n";
+            this_thread::sleep_for(chrono::seconds(exec_time)); // Simulate execution time
+
+            current_time += exec_time;
+            current_process->remaining_time -= exec_time;
+
+            if (current_process->remaining_time <= 0) {
+                current_process->completion_time = current_time;
+                completed_count++;
+                cout << "[Time " << current_time << "] Process " << current_process->id << " completed.\n";
+                is_live = false;
+            }
+        } else {
+            // If no processes are ready, just advance time
+            current_time++;
+        }
+        addNewArrivals();
+    } 
+    
 
 
 

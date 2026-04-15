@@ -15,8 +15,10 @@ class Priority{
     bool is_preemptive;
     Priority( vector<Process> allProcesses){
         this->allProcesses=allProcesses;
-        current_time=0;
-        is_live=false;
+        this->current_process=nullptr;
+        this->is_preemptive=false;
+        this->current_time=0;
+        this->is_live=false;
     };
 
     void addProcess(int id , int burst_time, int arrival_time = 0, int priority = 0);
