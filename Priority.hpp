@@ -1,0 +1,34 @@
+#ifndef PRIORITY_HPP
+#define PRIORITY_HPP
+#include <iostream>
+#include "Process.hpp"
+#include <vector>
+#include <queue>
+using namespace std;
+class Priority{
+    public:
+    int current_time;
+    vector<Process> allProcesses;
+    queue<Process> process_queue;
+    Process * current_process;
+    bool is_live;
+    bool is_preemptive;
+    Priority( vector<Process> allProcesses){
+        this->allProcesses=allProcesses;
+        current_time=0;
+        is_live=false;
+    };
+
+    void addProcess(int id , int burst_time, int arrival_time = 0, int priority = 0);
+    void execute(bool preemptive);
+    double getWaitingTime();
+    double getTurnaroundTime();
+};
+
+
+
+
+
+
+
+#endif

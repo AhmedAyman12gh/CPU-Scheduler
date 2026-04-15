@@ -12,8 +12,8 @@ using namespace std;
 
 
 // add new process to the vector
-void RoundRobin::addProcess(int id , int arrival , int burst ){
-    Process new_process(id, arrival, burst);
+void RoundRobin::addProcess(int id , int burst, int arrival) {
+    Process new_process(id, burst, arrival);
     allProcesses.push_back(new_process);
 }
 

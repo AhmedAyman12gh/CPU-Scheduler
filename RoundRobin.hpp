@@ -22,7 +22,7 @@ class RoundRobin{
         this->current_process = nullptr;
         this->is_live = true;
     }
-    void addProcess(int id ,  int arrival , int busrt);
+    void addProcess(int id , int burst_time, int arrival_time);
     void execute();
     double getWaitingTime();
     double getTurnaroundTime();
