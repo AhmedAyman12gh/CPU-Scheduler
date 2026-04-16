@@ -53,6 +53,9 @@ class CPUSchedulerGUI:
         self.btn_add = ttk.Button(entry_frame, text="Add Process", command=self.add_process_ui)
         self.btn_add.grid(row=0, column=8, padx=10)
 
+        self.btn_reset = ttk.Button(entry_frame, text="Reset All", command=self.reset_all)
+        self.btn_reset.grid(row=0, column=9, padx=10)
+
         # --- Simulation Controls ---
         sim_frame = ttk.Frame(self.root)
         sim_frame.pack(fill="x", padx=10, pady=5)
@@ -126,6 +129,15 @@ class CPUSchedulerGUI:
             
         except ValueError:
             messagebox.showerror("Error", "Numerical values required for times.")
+
+    def reset_all(self):
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+        self.process_colors.clear()
+        self.engine = None
+        self.is_live = False
+        self.canvas.delete("all")
+        self.lbl_stats.config(text="Average WT: 0.00  |  Average TAT: 0.00")
 
     def start_simulation(self):
         items = self.tree.get_children()
